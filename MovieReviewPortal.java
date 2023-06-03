@@ -1,189 +1,164 @@
-/*import java.util.*;
-
-public class MovieReviewPortal {
-    private static Map<String, Double> movieRatings = new HashMap<>();
-    private static Map<String, List<String>> movieReviews = new HashMap<>();
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("Welcome to the Movie Review Portal!");
-            System.out.println("1. Add a movie rating");
-            System.out.println("2. Add a movie review");
-            System.out.println("3. Get movie rating");
-            System.out.println("4. Get movie reviews");
-            System.out.println("5. Exit");
-            System.out.print("Please enter your choice: ");
-
-            int choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    addMovieRating(scanner);
-                    break;
-                case 2:
-                    addMovieReview(scanner);
-                    break;
-                case 3:
-                    getMovieRating(scanner);
-                    break;
-                case 4:
-                    getMovieReviews(scanner);
-                    break;
-                case 5:
-                    System.out.println("Thanks for using the Movie Review Portal!");
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    break;
-            }
-        }
-    }
-
-    private static void addMovieRating(Scanner scanner) {
-        System.out.print("Enter movie name: ");
-        String movieName = scanner.next();
-        System.out.print("Enter movie rating (out of 10): ");
-        double rating = scanner.nextDouble();
-        movieRatings.put(movieName, rating);
-        System.out.println("Movie rating added successfully!");
-    }
-
-    private static void addMovieReview(Scanner scanner) {
-        System.out.print("Enter movie name: ");
-        String movieName = scanner.next();
-        scanner.nextLine();
-        System.out.print("Enter review: ");
-        String review = scanner.nextLine();
-        if (movieReviews.containsKey(movieName)) {
-            movieReviews.get(movieName).add(review);
-        } else {
-            List<String> reviews = new ArrayList<>();
-            reviews.add(review);
-            movieReviews.put(movieName, reviews);
-        }
-        System.out.println("Movie review added successfully!");
-    }
-
-    private static void getMovieRating(Scanner scanner) {
-        System.out.print("Enter movie name: ");
-        String movieName = scanner.next();
-        if (movieRatings.containsKey(movieName)) {
-            System.out.println("Movie rating for " + movieName + " is " + movieRatings.get(movieName));
-        } else {
-            System.out.println("Movie not found.");
-        }
-    }
-
-    private static void getMovieReviews(Scanner scanner) {
-        System.out.print("Enter movie name: ");
-        String movieName = scanner.next();
-        if (movieReviews.containsKey(movieName)) {
-            List<String> reviews = movieReviews.get(movieName);
-            System.out.println("Movie reviews for " + movieName + ":");
-            for (String review : reviews) {
-                System.out.println(review);
-            }
-        } else {
-            System.out.println("Movie not found.");
-        }
-    }
-}*/
-import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-public class MovieReviewPortal {
+class Movie {
+    private String title;
+    private String director;
+    private int releaseYear;
+    private double rating;
+    private List<String> reviews;
 
-    private static final String FILE_PATH = "reviews.txt";
+    public Movie(String title, String director, int releaseYear, double rating) {
+        this.title = title;
+        this.director = director;
+        this.releaseYear = releaseYear;
+        this.rating = rating;
+        this.reviews = new ArrayList<>();
+    }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public int getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(int releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public List<String> getReviews() {
+        return reviews;
+    }
+
+    public void addReview(String review) {
+        reviews.add(review);
+    }
+
+    @Override
+    public String toString() {
+        return "Movie [title=" + title + ", director=" + director + ", releaseYear=" + releaseYear + ", rating=" + rating
+                + "]";
+    }
+}
+
+class MovieReviewPortal {
+    private Map<String, Movie> movies;
+
+    public MovieReviewPortal() {
+        movies = new HashMap<>();
+    }
+
+    public void addMovie(String title, String director, int releaseYear, double rating) {
+        Movie movie = new Movie(title, director, releaseYear, rating);
+        movies.put(title, movie);
+    }
+
+    public void addReview(String title, String review) {
+        Movie movie = movies.get(title);
+        if (movie != null) {
+            movie.addReview(review);
+        }
+    }
+
+    public Movie getMovie(String title) {
+        return movies.get(title);
+    }
+
+    public List<Movie> getAllMovies() {
+        return new ArrayList<>(movies.values());
+    }
+}
+
+public class Main {
     public static void main(String[] args) {
+        MovieReviewPortal portal = new MovieReviewPortal();
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
-            System.out.println("Welcome to the Movie Review Portal");
-            System.out.println("1. Add a review");
-            System.out.println("2. View all reviews");
-            System.out.println("3. Search for reviews by movie title");
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("1. Add Movie");
+            System.out.println("2. Add Review");
+            System.out.println("3. View Movie Reviews");
             System.out.println("4. Exit");
-
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Consume the newline character
 
             switch (choice) {
                 case 1:
-                    addReview(scanner);
+                    System.out.print("Enter movie title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter director: ");
+                    String director = scanner.nextLine();
+                    System.out.print("Enter release year: ");
+                    int releaseYear = scanner.nextInt();
+                    System.out.print("Enter rating: ");
+                    double rating = scanner.nextDouble();
+                    portal.addMovie(title, director, releaseYear, rating);
+                    System.out.println("Movie added successfully!");
                     break;
+
                 case 2:
-                    viewAllReviews();
+                    System.out.print("Enter movie title: ");
+                    String reviewTitle = scanner.nextLine();
+                    System.out.print("Enter your review: ");
+                    String review = scanner.nextLine();
+                    portal.addReview(reviewTitle, review);
+                    System.out.println("Review added successfully!");
                     break;
+
                 case 3:
-                    searchReviewsByTitle(scanner);
+                    System.out.print("Enter movie title: ");
+                    String movieTitle = scanner.nextLine();
+                    Movie movie = portal.getMovie(movieTitle);
+                    if (movie != null) {
+                        System.out.println("Movie: " + movie);
+                        System.out.println("Reviews:");
+                        for (String r : movie.getReviews()) {
+                            System.out.println("- " + r);
+                        }
+                    } else {
+                        System.out.println("Movie not found!");
+                    }
                     break;
+
                 case 4:
-                    System.out.println("Exiting...");
-                    System.exit(0);
+                    exit = true;
                     break;
+
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Invalid choice! Please try again.");
+                    break;
             }
+
+            System.out.println();
         }
-    }
 
-    private static void addReview(Scanner scanner) {
-        System.out.print("Enter the movie title: ");
-        String title = scanner.nextLine();
-
-        System.out.print("Enter your review: ");
-        String review = scanner.nextLine();
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
-            writer.write(title + ":" + review);
-            writer.newLine();
-            System.out.println("Review added successfully!");
-        } catch (IOException e) {
-            System.out.println("Failed to add review: " + e.getMessage());
-        }
-    }
-
-    private static void viewAllReviews() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":");
-                String title = parts[0];
-                String review = parts[1];
-                System.out.println("Title: " + title);
-                System.out.println("Review: " + review);
-                System.out.println();
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to view reviews: " + e.getMessage());
-        }
-    }
-
-    private static void searchReviewsByTitle(Scanner scanner) {
-        System.out.print("Enter the movie title to search: ");
-        String searchTitle = scanner.nextLine();
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            boolean found = false;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":");
-                String title = parts[0];
-                String review = parts[1];
-                if (title.equalsIgnoreCase(searchTitle)) {
-                    System.out.println("Title: " + title);
-                    System.out.println("Review: " + review);
-                    System.out.println();
-                    found = true;
-                }
-            }
-            if (!found) {
-                System.out.println("No reviews found for the given movie title.");
-            }
-        } catch (IOException e) {
-            System.out.println("Failed to search reviews: " + e.getMessage());
-        }
+        scanner.close();
     }
 }
